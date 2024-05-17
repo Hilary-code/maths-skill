@@ -1,4 +1,4 @@
-package readdata
+package readfile
 
 import (
 	"bufio"
@@ -7,21 +7,27 @@ import (
 	"strconv"
 )
 
-func ReadData(input string) ([]float64, error) {
+func ReadFile(input string) ([]float64, error) {
+	// File Opening
 	file, err := os.Open(input)
 	if err != nil {
-		return nil, err
+		fmt.Println("Error usage: go run main.go <data.txt>", err)
+		os.Exit(1)
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	var sliceArr []float64
+	var sliceArr []float64 
 	for scanner.Scan() {
 		line := scanner.Text()
+
+		if line == "" {
+			continue
+		}
+
 		content, err := strconv.ParseFloat(line, 64)
 		if err != nil {
-			fmt.Println("Error:", err)
-			return nil, err
+			continue
 		}
 		sliceArr = append(sliceArr, content)
 

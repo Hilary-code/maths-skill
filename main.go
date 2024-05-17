@@ -2,29 +2,43 @@ package main
 
 import (
 	"fmt"
+	"math"
+	calculate "math-skills/calculation"
+	"math-skills/readfile"
 	"os"
-
-	calculate "mathsskillproject/calculations"
-	"mathsskillproject/readdata"
 )
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Println("Error: usage go run main.go <data.txt>")
+		fmt.Println("Error usage: go run main.go <data.txt>")
 		os.Exit(1)
 	}
 
 	input := os.Args[1]
-	inputData, err := readdata.ReadData(input)
+	inputData, err := readfile.ReadFile(input)
 	if err != nil {
-		fmt.Println("Error occurred during reading", err)
+		fmt.Println("Error occurred during inputing data: ", err)
 		os.Exit(1)
 	}
-	average := calculate.CalculateAverage(inputData)
-	median := calculate.MedianCalculation(inputData)
-	variance := calculate.CalculateAverage(inputData)
 
-	fmt.Printf("Average: %d\n", int(average+0.5))
-	fmt.Printf("Median: %d\n", int(median+0.5))
-	fmt.Printf("Variance: %d\n", int(variance+0.5))
+	var validData []float64
+	for _, data := range inputData {
+		number, overflow := calculate.ConvFloatToInt(data)
+		if overflow {
+			continue
+		}
+		validData = append(validData, float64(number))
+	}
+
+	average := calculate.Average(validData)
+	median := calculate.Median(validData)
+	variance := calculate.Variance(validData)
+	stdVarian := math.Sqrt(variance)
+
+	convmedian, _ := calculate.ConvFloatToInt(median)
+
+	fmt.Printf("Average: %.0f\n", average)
+	fmt.Printf("Median: %d\n", convmedian)
+	fmt.Printf("Variance: %.0f\n", variance)
+	fmt.Printf("Standard Deviation: %.0f\n", stdVarian)
 }
